@@ -1,0 +1,264 @@
+<!-- Enhanced Navbar -->
+<nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item is-size-4 has-text-weight-bold" href="/" style="font-family: 'Poppins', sans-serif;">
+        <span class="icon-text">
+          <span class="icon">
+            <i class="fas fa-film"></i>
+          </span>
+          <span class="has-text-weight-bold has-text-primary">Movie</span>
+          <span class="has-text-weight-bold">Verse</span>
+        </span>
+      </a>
+
+      <!-- Hamburger menu -->
+      <a role="button" class="navbar-burger has-text-white" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="navbarMenu" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item has-text-weight-semibold is-hoverable" href="/">
+          <span class="icon">
+            <i class="fas fa-home"></i>
+          </span>
+          <span>Home</span>
+        </a>
+       
+        
+        {% if user.is_authenticated %}
+           <a class="navbar-item has-text-weight-semibold is-hoverable" href="{% url 'watched_list' %}">
+          <span class="icon">
+           <i class="fas fa-eye" style="color:lightgreen"></i>
+          </span>
+          <span>Watched</span>
+        </a>
+
+         <a class="navbar-item has-text-weight-semibold is-hoverable" href="{% url 'watchlist' %}">
+          <span class="icon">
+             <i class="fas fa-bookmark" style="color:orange"></i> 
+          </span>
+          <span>Watchlist</span>
+        </a>
+        {% endif %}
+          
+       
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <form method="get" action="{% url 'home' %}">
+            <div class="field has-addons">
+              <div class="control has-icons-left">
+                <input class="input is-focused is-rounded" type="text" name="q" placeholder="Search movies...">
+                <span class="icon is-small is-left">
+                  <i class="fas fa-search"></i>
+                </span>
+              </div>
+              <div class="control">
+                <button class="button is-primary is-rounded has-text-weight-semibold">
+                  <span class="icon">
+                    <i class="fas fa-search"></i>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Improved Authentication Section -->
+        <div class="navbar-item">
+          <div class="buttons">
+            {% if user.is_authenticated %}
+              <div class="dropdown is-right is-hoverable">
+                <div class="dropdown-trigger">
+                  <div class="user-profile" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <figure class="image is-32x32" style="margin: 0;">
+                    {% if user.profile.picture and user.profile.picture.url %}
+  <img class="is-rounded" src="{{ user.profile.picture.url }}" alt="Profile picture">
+{% else %}
+  <img src="https://ui-avatars.com/api/?name={{ profile.user.username }}&background=random&size=256" alt="Default profile picture">
+{% endif %}
+
+                    </figure>
+                    <span class="has-text-white">{{ user.first_name|first| upper }}.{{user.last_name|first|upper}}</span>
+                  </div>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <a href="{% url 'profile' user.username %}" class="dropdown-item">
+                      <span class="icon">
+                        <i class="fas fa-user"></i>
+                      </span>
+                      <span>Profile</span>
+                    </a>
+                    <a href="" class="dropdown-item">
+                      <span class="icon">
+                        <i class="fas fa-cog"></i>
+                      </span>
+                      <span>Settings</span>
+                    </a>
+                    <hr class="dropdown-divider">
+                    <a href="{% url 'logout' %}" class="dropdown-item has-text-danger">
+                      <span class="icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                      </span>
+                      <span>Logout</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <a class="button is-primary is-rounded" href="{% url 'login' %}">
+                <span class="icon">
+                  <i class="fas fa-sign-in-alt"></i>
+                </span>
+                <span>Login</span>
+              </a>
+              <a class="button is-light is-rounded" href="{% url 'signup' %}">
+                <span class="icon">
+                  <i class="fas fa-user-plus"></i>
+                </span>
+                <span>Sign up</span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<style>
+  /* Custom styles */
+  .navbar {
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 0.5rem 1rem;
+    min-height: 3.5rem;
+  }
+  
+  .navbar-item.is-hoverable {
+    transition: all 0.3s ease;
+    margin: 0 0.25rem;
+    border-radius: 8px;
+  }
+  
+  .navbar-item.is-hoverable:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-2px);
+  }
+  
+  .navbar-item img {
+    max-height: 2.5rem;
+  }
+  
+  .has-text-primary {
+    color: #00d1b2 !important;
+  }
+  
+  .button.is-primary {
+    background-color: #00d1b2;
+    transition: all 0.3s ease;
+  }
+  
+  .button.is-primary:hover {
+    background-color: #00b89c;
+    transform: scale(1.05);
+  }
+  
+  .input:focus {
+    border-color: #00d1b2;
+    box-shadow: 0 0 0 0.125em rgba(0, 209, 178, 0.25);
+  }
+
+  /* User profile dropdown styles */
+  .dropdown-content {
+    background-color: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 200px;
+  }
+  
+  .dropdown-item {
+    color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .dropdown-item:hover {
+    background-color: rgba(0, 209, 178, 0.1);
+    color: #00d1b2;
+  }
+  
+  .dropdown-divider {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .user-profile {
+    padding: 0.5rem 0.75rem;
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .user-profile:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  @media screen and (max-width: 1023px) {
+    .navbar-menu {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    .buttons {
+      margin-top: 1rem;
+      justify-content: center;
+    }
+    
+    .dropdown {
+      width: 100%;
+    }
+    
+    .dropdown-menu {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Mobile menu toggle
+  document.addEventListener('DOMContentLoaded', () => {
+    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+    if ($navbarBurgers.length > 0) {
+      $navbarBurgers.forEach(el => {
+        el.addEventListener('click', () => {
+          const target = el.dataset.target;
+          const $target = document.getElementById(target);
+          
+          el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
+        });
+      });
+    }
+  });
+</script>
+
+<style>
+.navbar-burger {
+    height: auto;
+    width: 3.25rem;
+}
+@media screen and (min-width: 1024px) {
+    .navbar-burger {
+        display: none;
+    }
+    .navbar-menu {
+        display: flex !important;
+    }
+}
+</style>

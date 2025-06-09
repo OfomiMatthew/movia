@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}{{profile.user.username}}'s Profile{% endblock title %}
+
+{% block content %}
+<section class="section profile-section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-three-fifths">
+        <!-- Profile Header Card -->
+        <div class="profile-header-card">
+          <div class="profile-avatar-container">
+            <figure class="profile-avatar">
+              {% if profile.picture %}
+                <img src="{{ profile.picture.url }}" alt="Profile picture">
+              {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ profile.user.username }}&background=random&size=256" alt="Default profile picture">
+              {% endif %}
+            </figure>
+          </div>
+          
+          <div class="profile-header-content">
+            <div class="level is-mobile">
+              <div class="level-left">
+                <div class="profile-header-text">
+                  <h1 class="profile-username">{{profile.user.username}}</h1>
+                  {% if profile.first_name or profile.last_name %}
+                  <p class="profile-name">{{ profile.first_name }} {{ profile.last_name }}</p>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="level-right">
+                <a href="{% url 'edit-profile' %}" class="button is-primary is-outlined is-rounded">
+                  <span class="icon">
+                    <i class="fas fa-edit"></i>
+                  </span>
+                  <span>Edit Profile</span>
+                </a>
+              </div>
+            </div>
+            
+            {% if profile.location %}
+            <div class="profile-location">
+              <span class="icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </span>
+              <span>{{ profile.location }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="profile-stats">
+              <div class="stats-item">
+                <span class="stats-number">{{ review }}</span>
+                <span class="stats-label">Reviews</span>
+              </div>
+              <div class="stats-item">
+                <span class="stats-number">{{ watched }}</span>
+                <span class="stats-label">Watched</span>
+              </div>
+              <div class="stats-item">
+                <span class="stats-number">{{ watchlist }}</span>
+                <span class="stats-label">Watchlist</span>
+              </div>
+              <div class="stats-item">
+                <span class="stats-number">{{ profile.user.date_joined|date:"Y" }}</span>
+                <span class="stats-label">Member Since</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Profile Details Card -->
+        <div class="profile-details-card">
+          {% if profile.profile_info %}
+          <div class="profile-bio">
+            <h3 class="details-title">About</h3>
+            <p>{{ profile.profile_info }}</p>
+          </div>
+          {% endif %}
+          
+          <div class="profile-social">
+            {% if profile.social_url %}
+            <a href="{{ profile.social_url }}" target="_blank" class="button is-light is-rounded">
+              <span class="icon">
+                <i class="fas fa-external-link-alt"></i>
+              </span>
+              <span>Visit Social Profile</span>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Base styling */
+  .profile-section {
+    padding: 3rem 1.5rem 2rem; /* Added more top padding */
+  }
+  
+  /* Profile header card */
+  .profile-header-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+    margin-top: 2rem; /* Added margin at the top */
+  }
+  
+  .profile-header-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    transform: translate(30%, -30%);
+  }
+  
+  .profile-header-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 150px;
+    height: 150px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    transform: translate(-30%, 30%);
+  }
+  
+  /* Profile header text container */
+  .profile-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem; /* Space between username and name */
+  }
+  
+  /* Avatar styling */
+  .profile-avatar-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Profile text */
+  .profile-username {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0;
+  }
+  
+  .profile-name {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+  }
+  
+  .profile-location {
+    display: flex;
+    align-items: center;
+    color: #7f8c8d;
+    margin: 1rem 0 1.5rem;
+  }
+  
+  .profile-location .icon {
+    margin-right: 0.5rem;
+  }
+  
+  /* Stats styling */
+  .profile-stats {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .stats-item {
+    text-align: center;
+    padding: 0 1rem;
+  }
+  
+  .stats-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+  }
+  
+  .stats-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Details card */
+  .profile-details-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  
+  .details-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f5f7fa;
+  }
+  
+  .profile-bio {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: #34495e;
+  }
+  
+  .profile-social {
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .profile-section {
+      padding: 2rem 1rem 1rem; /* Adjusted top padding for mobile */
+    }
+    
+    .profile-header-card {
+      padding: 1.5rem;
+      margin-top: 1rem; /* Reduced top margin for mobile */
+    }
+    
+    .profile-stats {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stats-item {
+      margin-bottom: 1rem;
+    }
+    
+    .profile-details-card {
+      padding: 1.5rem;
+    }
+    
+    .profile-username {
+      font-size: 1.5rem;
+    }
+    
+    .profile-name {
+      font-size: 1rem;
+    }
+  }
+</style>
+{% endblock content %}

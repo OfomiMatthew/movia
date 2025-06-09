@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        {% if query %}
+            <div class="notification is-light mt-5">
+                <button class="delete"></button>
+                <p>Searching for: <strong>{{ query }}</strong></p>
+                {% if error %}
+                    <div class="notification is-danger mt-5">
+                        {{ error }}
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if movie_data and movie_data.Response == "True" %}
+                <div class="columns is-multiline">
+                    {% for movie in movie_data.Search %}
+                        <div class="column is-one-quarter mt-5">
+                            <div class="card mt-5">
+                                <div class="card-image">
+                                    <figure class="image is-4by3">
+                                        {% if movie.Poster != "N/A" %}
+                                            <img src="{{ movie.Poster }}" alt="{{ movie.Title }} poster">
+                                        {% else %}
+                                            <img src="https://th.bing.com/th/id/OIP.-YyumTbOD-gIQhU6aA19vQHaHa?rs=1&pid=ImgDetMain" alt="No poster available">
+                                        {% endif %}
+                                    </figure>
+                                </div>
+                                <div class="card-content">
+                                    <p class="title is-5"><a href="{% url 'movie_details' movie.imdbID %}">{{ movie.Title }}</a></p>
+                                    <p class="subtitle is-6">{{ movie.Year }}</p>
+                                    <p class="subtitle is-6">Type: {{ movie.Type|title }}</p>
+                                </div>
+                                <footer class="card-footer">
+                                    <a href="https://www.imdb.com/title/{{ movie.imdbID }}" target="_blank" class="card-footer-item">View on IMDB</a>
+                                </footer>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% elif movie_data and movie_data.Response == "False" %}
+                <div class="notification is-warning">
+                    No results found for "{{ query }}"
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    {% if page_number %}
+        <div class="has-text-centered mt-5">
+            <a href="{% url 'pagination' query page_number %}" class="button is-primary is-outlined">
+                Load more
+            </a>
+        </div>
+    {% endif %}
+</section>
+
+<script>
+// Add event listeners to all delete buttons
+document.addEventListener('DOMContentLoaded', () => {
+  (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+    const $notification = $delete.parentNode;
+
+    $delete.addEventListener('click', () => {
+      $notification.parentNode.removeChild($notification);
+    });
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ actor.name }}{% endblock title %}
+
+{% block content %}
+<section class="section" style="background-color: #000; min-height: 100vh; padding: 2rem 0;">
+  <div class="container is-fluid" style="padding: 2rem;">
+    <h1 class="title has-text-centered mb-6 mt-5 has-text-white">Movies featuring {{ actor.name }}</h1>
+    
+    <div class="columns is-multiline is-variable is-5">
+      {% for movie in page_obj %}
+      <div class="column is-one-fifth-widescreen is-one-quarter-desktop is-one-third-tablet is-half-mobile">
+        <div class="card" style="background-color: #1a1a1a; border: 1px solid #333;">
+          <div class="card-image">
+            <figure class="image is-2by3">
+              <a href="{% url 'movie_details' movie.imdbID %}">
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }} poster" class="hover-zoom" style="object-fit: cover;">
+              </a>
+            </figure>
+          </div>
+          <div class="card-content has-text-centered p-3">
+            <h3 class="title is-size-5 is-size-6-mobile mt-2 has-text-white">
+              {{ movie.title }}
+            </h3>
+            <p class="subtitle is-size-7 mt-1 has-text-grey-light">{{ movie.year }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Cleaned Up Pagination -->
+    <nav class="pagination is-centered mt-6 " role="navigation" aria-label="pagination">
+      <div class="pagination-wrapper" style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous button is-dark">
+            <span class="icon">
+              <i class="fas fa-chevron-left"></i>
+            </span>
+            <span>Previous</span>
+          </a>
+        {% else %}
+          <a class="pagination-previous button is-dark" disabled>
+            <span class="icon">
+              <i class="fas fa-chevron-left"></i>
+            </span>
+            <span>Previous</span>
+          </a>
+        {% endif %}
+        
+        <ul class="pagination-list" style="margin: 0; flex-wrap: wrap; justify-content: center;">
+          {% if page_obj.number > 3 %}
+            <li>
+              <a href="?page=1" class="pagination-link button is-dark">1</a>
+            </li>
+            <li>
+              <span class="pagination-ellipsis has-text-white">&hellip;</span>
+            </li>
+          {% endif %}
+          
+          {% for num in page_obj.paginator.page_range %}
+            {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+              <li>
+                <a href="?page={{ num }}" 
+                   class="pagination-link button {% if num == page_obj.number %}is-info{% else %}is-dark{% endif %}">
+                  {{ num }}
+                </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+          
+          {% if page_obj.number < page_obj.paginator.num_pages|add:-2 %}
+            <li>
+              <span class="pagination-ellipsis has-text-white">&hellip;</span>
+            </li>
+            <li>
+              <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-link button is-dark">
+                {{ page_obj.paginator.num_pages }}
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="pagination-next button is-dark">
+            <span>Next</span>
+            <span class="icon">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </a>
+        {% else %}
+          <a class="pagination-next button is-dark" disabled>
+            <span>Next</span>
+            <span class="icon">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </a>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
+</section>
+
+<style>
+  /* Ensure full black background */
+  body {
+    background-color: #000 !important;
+  }
+  
+  /* Card hover effects */
+  .hover-zoom {
+    transition: transform 0.3s ease;
+  }
+  
+  .hover-zoom:hover {
+    transform: scale(0.95);
+  }
+  
+  /* Card styling */
+  .card {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Improved Pagination */
+  .pagination-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  
+  .pagination-list {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .pagination-link, 
+  .pagination-previous,
+  .pagination-next {
+    min-width: 2.5em;
+    justify-content: center;
+    border: 1px solid #333 !important;
+  }
+  
+  .pagination-link.is-current {
+    background-color: #485fc7 !important;
+    border-color: #485fc7 !important;
+    color: white !important;
+  }
+  
+  .pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 768px) {
+    .pagination-wrapper {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .pagination-list {
+      margin: 0.5rem 0;
+      justify-content: center;
+    }
+    
+    .pagination-previous,
+    .pagination-next {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock content %}

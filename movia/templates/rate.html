@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Rate {{ movie.title }}{% endblock %}
+
+{% block content %}
+<section class="section" style="min-height: calc(100vh - 200px);">
+  <div class="container is-fluid">
+    <div class="columns is-centered">
+      <div class="column is-two-thirds">
+        <div class="box" style="margin-top: 2rem;">
+          <div class="columns">
+            <!-- Movie Poster Column -->
+            <div class="column is-one-third">
+              <figure class="image is-3by4">
+                <img src="{{ movie.poster.url }}" alt="{{ movie.title }} poster" class="has-ratio" style="border-radius: 6px;">
+              </figure>
+              <div class="content mt-4">
+                <h3 class="title is-4">{{ movie.title }}</h3>
+                <p class="subtitle is-6">{{ movie.year }} • {{ movie.runtime }}</p>
+                <div class="tags">
+                  {% for genre in movie.genre.all %}
+                    <span class="tag is-info">{{ genre.title }}</span>
+                  {% endfor %}
+                </div>
+                <p class="mt-3">{{ movie.plot|truncatewords:30 }}</p>
+              </div>
+            </div>
+            
+            <!-- Rating Form Column -->
+            <div class="column">
+              <h1 class="title has-text-centered mb-5">Rate This Movie</h1>
+              
+              <form method="post">
+                {% csrf_token %}
+                
+                <div class="columns is-centered">
+                  <div class="column">
+                    <!-- Rating Selection -->
+                    <div class="field">
+                      <label class="label">Your Rating (1-10)</label>
+                      <div class="control">
+                        <div class="select is-fullwidth is-medium">
+                          {{ form.rate }}
+                        </div>
+                      </div>
+                      <div class="rating-preview has-text-centered mt-3 mb-4">
+                        <!-- Star preview will appear here -->
+                      </div>
+                      {% if form.rate.errors %}
+                        <p class="help is-danger">{{ form.rate.errors }}</p>
+                      {% endif %}
+                    </div>
+                    
+                    <!-- Review Text -->
+                    <div class="field">
+                      <label class="label">Your Review (Optional)</label>
+                      <div class="control">
+                        {{ form.text }}
+                      </div>
+                      {% if form.text.errors %}
+                        <p class="help is-danger">{{ form.text.errors }}</p>
+                      {% endif %}
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="field is-grouped is-grouped-centered mt-6">
+                      <div class="control">
+                        <button type="submit" class="button is-primary is-medium">
+                          <span class="icon">
+                            <i class="fas fa-star"></i>
+                          </span>
+                          <span>Submit Rating</span>
+                        </button>
+                      </div>
+                      <div class="control">
+                        <a href="{% url 'movie_details' movie.imdbID %}" class="button is-light is-medium">
+                          <span class="icon">
+                            <i class="fas fa-times"></i>
+                          </span>
+                          <span>Cancel</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Ensure full page coverage */
+  html, body {
+    height: 100%;
+  }
+  
+  /* Form styling */
+  textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    resize: vertical;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+  
+  textarea:focus {
+    border-color: #485fc7;
+    box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+  }
+  
+  .select select {
+    width: 100%;
+    height: 2.5em;
+    font-size: 1.1rem;
+  }
+  
+  /* Star rating preview */
+  .rating-preview {
+    font-size: 2rem;
+    color: #ffdd57;
+    letter-spacing: 0.3rem;
+    min-height: 2.5rem;
+  }
+  
+  /* Box styling */
+  .box {
+    border-radius: 8px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 768px) {
+    .column.is-one-third {
+      text-align: center;
+    }
+    
+    .rating-preview {
+      font-size: 1.5rem;
+      letter-spacing: 0.2rem;
+    }
+    
+    textarea {
+      min-height: 120px;
+    }
+  }
+</style>
+
+<script>
+  // Star rating preview
+  document.addEventListener('DOMContentLoaded', () => {
+    const rateSelect = document.getElementById('id_rate');
+    const previewContainer = document.querySelector('.rating-preview');
+    
+    function updatePreview() {
+      const rating = rateSelect.value;
+      previewContainer.innerHTML = '★'.repeat(rating) + '☆'.repeat(10 - rating);
+    }
+    
+    rateSelect.addEventListener('change', updatePreview);
+    updatePreview(); // Initialize preview
+    
+    // Focus the first form element
+    rateSelect.focus();
+  });
+</script>
+{% endblock %}

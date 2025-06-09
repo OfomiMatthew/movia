@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Watched Movies{% endblock %}
+
+{% block content %}
+<!-- Added full-height-wrapper div with black background -->
+<div class="full-height-wrapper" style="background-color: #000; min-height: 100vh;">
+  <section class="section">
+    <div class="container is-fluid">
+      <h1 class="title has-text-centered mb-5 mt-5 has-text-white">Watched Movies</h1>
+      
+      {% if movies %}
+      <div class="columns is-multiline is-variable is-2">
+        {% for movie in movies %}
+        <div class="column is-one-quarter-desktop is-one-third-tablet is-half-mobile">
+          <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+            <div class="card-image">
+              <figure class="image is-2by3" style="max-height: 200px; overflow: hidden;">
+                <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" style="object-fit: cover; width: 100%; height: 100%;">
+              </figure>
+            </div>
+            <div class="card-content" style="padding: 1rem;">
+              <div class="media">
+                <div class="media-content">
+                  <p class="title is-6 mb-1">{{ movie.title|truncatechars:25 }}</p>
+                  <p class="subtitle is-7 mt-3">{{ movie.year }}</p>
+                </div>
+              </div>
+            </div>
+            <footer class="card-footer" style="padding: 0.5rem;">
+              <a href="{% url 'movie_details' movie.imdbID %}" class="button is-small is-info is-fullwidth">
+                <span class="icon is-small">
+                  <i class="fas fa-info-circle"></i>
+                </span>
+                <span>Details</span>
+              </a>
+            </footer>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="notification is-warning is-light has-text-centered">
+        You haven't marked any movies as watched yet.
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+<style>
+  /* Full page black background */
+  html, body {
+    background-color: #000 !important;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  
+  /* Ensure content takes full height */
+  .full-height-wrapper {
+    min-height: 100vh;
+    padding-bottom: 2rem;
+  }
+  
+  /* Compact card styling */
+  .card {
+    border-radius: 6px;
+    box-shadow: 0 2px 3px rgba(10,10,10,0.1);
+    transition: transform 0.2s;
+    background-color: #121212;
+    color: white;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .title, .subtitle {
+    color: white !important;
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 768px) {
+    .column.is-one-quarter-desktop.is-one-third-tablet.is-half-mobile {
+      padding: 0.5rem;
+    }
+    
+    .card-content {
+      padding: 0.75rem !important;
+    }
+  }
+</style>
+{% endblock %}

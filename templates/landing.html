@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <section class="hero-banner">
+      <!-- Video Background -->
+      <video autoplay muted loop class="video-background">
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-going-down-a-curved-highway-through-a-mountain-range-41576-large.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+      </video>
+      
+      <!-- Movie Posters Floating Animation -->
+      <div class="movie-posters" id="moviePosters"></div>
+      
+      <div class="overlay"></div>
+      <div class="hero-content">
+          <h1 class="movie-title cinematic-font">
+              WELCOME TO MOVIEVERSE
+          </h1>
+          <h2 class="movie-subtitle">
+              Discover the most incredible movie collection. Stream now or create your watchlist to enjoy later.
+          </h2>
+          <div style="text-align: center;">
+              <button class="btn-primary">
+                  <span class="icon">
+                      <i class="fas fa-play"></i>
+                  </span>
+                  <span>Watch Now</span>
+              </button>
+          </div>
+      </div>
+  </section>
+{% endblock %}

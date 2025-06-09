@@ -1,0 +1,465 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if messages %}
+<div class="container" style="position: fixed; top: 20px; right: 20px; z-index: 1000; width: 350px;">
+    {% for message in messages %}
+    <div class="notification is-{{ message.tags }} is-light">
+        <button class="delete"></button>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<style>
+    .hero.is-info {
+        background: linear-gradient(rgba(0, 0, 0), rgba(0, 0, 0)), url('{{ movie_data.poster }}') center/cover;
+    }
+    .poster-container {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .tag {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .rating-value {
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .section {
+        padding: 2rem 1.5rem;
+    }
+    .content-block {
+        background-color: white;
+        border-radius: 6px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    .review-card {
+        border-left: 4px solid #485fc7;
+        padding-left: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .star-rating {
+        color: #ffdd57;
+        margin-right: 0.5rem;
+    }
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .review-user {
+        font-weight: bold;
+    }
+    .review-date {
+        color: #7a7a7a;
+        font-size: 0.9rem;
+    }
+
+
+   .review-card {
+        border-left: 4px solid #485fc7;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        background-color: white;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .star-rating {
+        color: #ffdd57;
+        margin-right: 0.5rem;
+    }
+    .review-user {
+        font-weight: bold;
+        margin-right: 1rem;
+    }
+    .review-date {
+        color: #7a7a7a;
+        font-size: 0.9rem;
+    }
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    .media-left img {
+        border-radius: 50%;
+        object-fit: cover;
+    }
+</style>
+
+<!-- Hero Section with Movie Title -->
+<section class="hero is-info is-medium">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-vcentered">
+                <div class="column is-one-third">
+                    <div class="poster-container">
+                        <img src="{{ movie_data.poster_url }}" alt="{{ movie_data.title }} poster" style="width: 100%;">
+                        <div class="buttons mt-3">
+                            <button class="button is-success js-watched-btn"
+                                    data-imdbid="{{ movie_data.imdbID }}"
+                                    data-loading-text="Marking...">
+                                <span class="icon">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                                <span>Watched</span>
+                            </button>
+                            
+                            <button class="button is-info js-watchlist-btn"
+                                    data-imdbid="{{ movie_data.imdbID }}"
+                                    data-loading-text="Adding...">
+                                <span class="icon">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                                <span>Watchlist</span>
+                            </button>
+
+                            <a class="button is-warning" href="{% url 'rate' movie_data.imdbID %}">
+                                <span class="icon">
+                                    <i class="fas fa-star"></i>
+                                </span>
+                                <span>Rate</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <h1 class="title is-1">{{ movie_data.title }}</h1>
+                    <h2 class="subtitle is-4">
+                        {{ movie_data.year }} • {{ movie_data.runtime }} • {{ movie_data.rated }}
+                        {% if movie_data.type == 'series' and movie_data.totalSeasons %}
+                            • {{ movie_data.totalSeasons }} Seasons
+                        {% endif %}
+                    </h2>
+                    
+                    <div class="field is-grouped is-grouped-multiline" style="margin-top: 1rem;">
+                        {% with genres=movie_data.genre.split %}
+                            {% for genre in genres %}
+                            <div class="control">
+                                <div class="tags has-addons">
+                                    <span class="tag is-info is-medium">{{ genre }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endwith %}
+                    </div>
+                    
+                    <div class="level" style="margin-top: 1.5rem;">
+                        {% if movie_data.imdbRating %}
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">IMDb Rating</p>
+                                <p class="title">
+                                    {{ movie_data.imdbRating }}/10 
+                                    <span class="icon has-text-warning">
+                                        <i class="fas fa-star"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if movie_data.metascore != 'N/A' %}
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Metascore</p>
+                                <p class="title">{{ movie_data.metascore }}/100</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if movie_data.imdbVotes %}
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Votes</p>
+                                <p class="title">{{ movie_data.imdbVotes }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content Section -->
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <!-- Left Column -->
+            <div class="column is-two-thirds">
+                <!-- Plot Section -->
+                <div class="content-block">
+                    <h3 class="title is-4">Plot</h3>
+                    <p>{{ movie_data.plot }}</p>
+                </div>
+                
+                <!-- Cast & Crew Section -->
+                <div class="content-block">
+                    <h3 class="title is-4">Cast & Crew</h3>
+                    <div class="content">
+                        <p><strong>Director:</strong> 
+                        {% if movie_data.director != 'N/A' %}
+                             {{ movie_data.director }}</p>
+                        {% endif %}
+                        
+                        <p><strong>Writers:</strong> {{ movie_data.writer }}</p>
+
+                        <p><strong>Stars:</strong> 
+                            {% for actor in movie_data.actors.all  %}
+                                 <a href="{{ actor.get_absolute_url}}">{{actor.name}}{% if not forloop.last %},{% endif %}</a>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Additional Info Section -->
+                <div class="content-block">
+                    <h3 class="title is-4">Details</h3>
+                    <div class="content">
+                        <p><strong>Release Date:</strong> {{ movie_data.released }}</p>
+                        <p><strong>Country:</strong> {{ movie_data.country }}</p>
+                        <p><strong>Language:</strong> {{ movie_data.language }}</p>
+                        <p><strong>Genre:</strong> 
+                            {% for gen in movie_data.genre.all  %}
+                                <a href="{{ gen.get_absolute_url}}">{{gen.title}}</a>{% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        </p>
+                        {% if movie_data.type == 'movie' and movie_data.boxOffice %}
+                        <p><strong>Box Office:</strong> {{ movie_data.boxOffice }}</p>
+                        {% endif %}
+                        {% if movie_data.awards and movie_data.awards != 'N/A' %}
+                        <p><strong>Awards:</strong> {{ movie_data.awards }}</p>
+                        {% endif %}
+                        {% if movie_data.production %}
+                        <p><strong>Production:</strong> {{ movie_data.production }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="column">
+                <!-- Ratings Section -->
+                <div class="content-block">
+                    <h3 class="title is-4">Technical Info</h3>
+                    <div class="content">
+                        <p><strong>Type:</strong> {{ movie_data.type|title }}</p>
+                        {% if movie_data.dvd %}
+                        <p><strong>DVD Release:</strong> {{ movie_data.dvd }}</p>
+                        {% endif %}
+                        {% if movie_data.website and movie_data.website != 'N/A' %}
+                        <p>
+                            <strong>Website:</strong> 
+                            <a href="{{ movie_data.website }}" target="_blank">Official Site</a>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- External Ratings Section -->
+                <div class="content-block">
+                    <h3 class="title is-4">External Ratings</h3>
+                    {% if movie_data.Ratings %}
+                        {% for rating in movie_data.Ratings %}
+                        <div class="media" style="margin-bottom: 1rem;">
+                            <div class="media-content">
+                                <p class="has-text-weight-semibold">{{ rating.Source }}</p>
+                                <p class="rating-value">{{ rating.Value }}</p>
+                            </div>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p>No ratings available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Section -->
+<section class="section" style="background-color: #f5f5f5;">
+    <div class="container">
+        <h2 class="title is-3 has-text-centered mb-5">Reviews</h2>
+        
+        {% if reviews %}
+            <div class="columns is-multiline">
+                {% for review in reviews %}
+                <div class="column is-half">
+                    <div class="review-card">
+                        <div class="media">
+                            <figure class="media-left">
+                                <p class="image is-48x48">
+                                    {% if review.user.profile.picture %}
+                                    <img class="is-rounded" src="{{ review.user.profile.picture.url }}" alt="{{ review.user.username }}'s profile picture">
+                                    {% else %}
+                                    <span class="icon is-large">
+                                        <i class="fas fa-user-circle fa-2x"></i>
+                                    </span>
+                                    {% endif %}
+                                </p>
+                            </figure>
+                            <div class="media-content">
+                                <div class="review-header">
+                                    <div>
+                                        <span class="star-rating">
+                                            {% for i in "1234567890" %}
+                                                {% if forloop.counter <= review.rate %}
+                                                    ★
+                                                {% else %}
+                                                    ☆
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                        <span class="review-user">{{ review.user.username }}</span>
+                                    </div>
+                                    <span class="review-date">{{ review.date|date:"F j, Y, g:i A" }}</span>
+                                </div>
+                                {% if review.text %}
+                                <div class="content">
+                                    <p>{{ review.text }}</p>
+
+                                  
+                                    <div class="buttons are-small">
+    <a href="{% url 'review.likes' review.user.username movie_data.imdbID %}" 
+       class="button is-small {% if request.user in review.likers.all %}is-success{% else %}is-light{% endif %}">
+        <span class="icon">
+            <i class="fas fa-thumbs-up" style="color:green"></i>
+        </span>
+        <span>{{ review.likes }}</span>
+    </a>
+    
+    <a href="{% url 'review.unlikes' review.user.username movie_data.imdbID %}" 
+       class="button is-small {% if request.user in review.unlikers.all %}is-danger{% else %}is-light{% endif %}">
+        <span class="icon">
+            <i class="fas fa-thumbs-down" style="color:orange"></i>
+        </span>
+        <span>{{ review.unlikes }}</span>
+    </a>
+</div>
+
+
+
+
+  <!-- Comment Section -->
+        <div class="comments-section" style="margin-top: 1rem;">
+            <h5 class="title is-5">Comments</h5>
+            
+            <!-- Comment Form -->
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_comment' review.user.username movie_data.imdbID %}">
+                {% csrf_token %}
+                <div class="field">
+                    <div class="control">
+                        <textarea class="textarea is-small" name="body" placeholder="Add a comment..."></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="button is-small is-info">Post Comment</button>
+            </form>
+            {% else %}
+            <p><a href="{% url 'login' %}">Login</a> to post comments</p>
+            {% endif %}
+            
+            <!-- Comments List -->
+            <div class="comments-list" style="margin-top: 1rem;">
+                {% for comment in review.comments.all %}
+                <article class="media" style="margin-bottom: 1rem;">
+                    <figure class="media-left">
+                        <p class="image is-32x32">
+                            {% if comment.user.profile.picture %}
+                            <img src="{{ comment.user.profile.picture.url }}" class="is-rounded">
+                            {% else %}
+                            <span class="icon">
+                                <i class="fas fa-user-circle"></i>
+                            </span>
+                            {% endif %}
+                        </p>
+                    </figure>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong>{{ comment.user.username }}</strong>
+                                <small>{{ comment.date|timesince }} ago</small>
+                                <br>
+                                {{ comment.body }}
+                            </p>
+                        </div>
+                    </div>
+                </article>
+                {% empty %}
+                <p>No comments yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+
+
+
+
+
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="notification is-light has-text-centered">
+                <p>No reviews yet. Be the first to review!</p>
+                <a href="{% url 'rate' movie_data.imdbID %}" class="button is-primary mt-3">
+                    <span class="icon">
+                        <i class="fas fa-star"></i>
+                    </span>
+                    <span>Write a Review</span>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+document.querySelectorAll('.js-watched-btn, .js-watchlist-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const originalText = this.innerHTML;
+        this.innerHTML = this.dataset.loadingText;
+        this.classList.add('is-loading');
+        
+        const url = this.classList.contains('js-watched-btn') 
+            ? `/add-watched/${this.dataset.imdbid}/` 
+            : `/add-to-watch/${this.dataset.imdbid}/`;
+            
+        fetch(url)
+            .then(response => window.location.reload())
+            .catch(() => {
+                this.innerHTML = originalText;
+                this.classList.remove('is-loading');
+            });
+    });
+});
+
+// Close notifications when X is clicked
+document.addEventListener('DOMContentLoaded', () => {
+    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+        $notification = $delete.parentNode;
+        $delete.addEventListener('click', () => {
+            $notification.parentNode.removeChild($notification);
+        });
+    });
+});
+</script>
+{% endblock %}

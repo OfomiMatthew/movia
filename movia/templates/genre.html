@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ genre.title }} Movies{% endblock title %}
+
+{% block content %}
+<section class="section" style="background-color: #000; min-height: 100vh; padding: 2rem 0;">
+  <div class="container is-fluid" style="padding: 2rem;">
+    <h1 class="title has-text-centered mb-6 mt-5 has-text-white">{{ genre.title }} Movies</h1>
+    
+    <div class="columns is-multiline is-variable is-5">
+      {% for movie in page_obj %}
+      <div class="column is-one-fifth-widescreen is-one-quarter-desktop is-one-third-tablet is-half-mobile">
+        <div class="card" style="background-color: #1a1a1a; border: 1px solid #333;">
+          <div class="card-image">
+            <figure class="image is-2by3">
+              <a href="{% url 'movie_details' movie.imdbID %}">
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }} poster" class="hover-zoom" style="object-fit: cover;">
+              </a>
+            </figure>
+          </div>
+          <div class="card-content has-text-centered p-3">
+            <h3 class="title is-size-5 is-size-6-mobile mt-2 has-text-white">
+              {{ movie.title }}
+            </h3>
+            <p class="has-text-grey-light">{{ movie.year }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% include 'pagination.html' %}
+  </div>
+</section>
+
+<style>
+  /* Ensure full black background */
+  body {
+    background-color: #000 !important;
+  }
+  
+  /* Card hover effects */
+  .hover-zoom {
+    transition: transform 0.3s ease;
+  }
+  
+  .hover-zoom:hover {
+    transform: scale(0.95);
+  }
+  
+  /* Card styling */
+  .card {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Responsive adjustments */
+  @media screen and (max-width: 1024px) {
+    .columns.is-variable.is-5 {
+      --columnGap: 1.5rem;
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .column.is-one-fifth-widescreen {
+      width: 50%;
+    }
+    
+    .card-content {
+      padding: 1rem !important;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .column.is-half-mobile {
+      width: 100%;
+    }
+  }
+  
+  /* Pagination styling */
+  .pagination {
+    margin-top: 3rem;
+  }
+  
+  .pagination-link {
+    background-color: #1a1a1a;
+    color: white;
+    border-color: #333;
+  }
+  
+  .pagination-link.is-current {
+    background-color: #485fc7;
+    border-color: #485fc7;
+  }
+</style>
+{% endblock content %}
