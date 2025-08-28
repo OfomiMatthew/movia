@@ -40,24 +40,7 @@ def PasswordChange(request):
 def PasswordChangeDone(request):
   return render(request,'registration/change_password_done.html')
 
-# @login_required
-# def EditProfile(request):
-#   user = request.user.id 
-#   profile = Profile.objects.get(user__id=user)
-#   if request.method == 'POST':
-#     form = EditProfileForm(request.POST,request.FILES)
-#     if form.is_valid():
-#       profile.picture = form.cleaned_data.get('picture')
-#       profile.first_name = form.cleaned_data.get('first_name')
-#       profile.last_name = form.cleaned_data.get('last_name')
-#       profile.location = form.cleaned_data.get('location')
-#       profile.social_url = form.cleaned_data.get('social_url')
-#       profile.profile_info = form.cleaned_data.get('profile_info')
-#       profile.save()
-#       return redirect('home')
-#   else:
-#     form = EditProfileForm()
-#   return render(request,'edit-profile.html',{'form':form})
+
 
 @login_required
 def EditProfile(request):
